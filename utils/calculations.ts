@@ -10,6 +10,7 @@ export interface Renda {
   ativa: boolean;
   diaInicio: number; // dia do mês em que começa a contagem (1-31)
   dataAdmissao?: string; // "DD/MM/AAAA" — data de admissão / início desta renda
+  baseMes?: 'diasUteis' | 'mesCompleto'; // base de cálculo da taxa por segundo
   // CLT
   descontarINSS?: boolean;
   descontarIRRF?: boolean;
@@ -107,7 +108,8 @@ export function calcularValorPorSegundo(
   const salarioLiquido = calcularSalarioLiquido(renda);
 
   if (modo === 'trabalhado') {
-    const totalSegundos = renda.diasUteis * renda.horasPorDia * 3600;
+    const diasBase = (renda.baseMes ?? 'diasUteis') === 'mesCompleto' ? 30 : renda.diasUteis;
+    const totalSegundos = diasBase * renda.horasPorDia * 3600;
     if (totalSegundos === 0) return 0;
     return salarioLiquido / totalSegundos;
   } else {

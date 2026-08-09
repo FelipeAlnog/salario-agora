@@ -53,6 +53,9 @@ export function RendaForm({ inicial, onSalvar, onCancelar }: Props) {
   const [outrosCustos, setOutrosCustos] = useState(
     (inicial?.outrosCustos ?? 0).toString()
   );
+  const [baseMes, setBaseMes] = useState<'diasUteis' | 'mesCompleto'>(
+    inicial?.baseMes ?? 'diasUteis'
+  );
   const [diaInicio, setDiaInicio] = useState(
     (inicial?.diaInicio ?? 1).toString()
   );
@@ -73,6 +76,7 @@ export function RendaForm({ inicial, onSalvar, onCancelar }: Props) {
     horarioInicio,
     horarioFim,
     ativa: inicial?.ativa ?? true,
+    baseMes,
     diaInicio: parseInt(diaInicio) || 1,
     dataAdmissao: dataAdmissao.trim() || undefined,
     descontarINSS,
@@ -169,6 +173,32 @@ export function RendaForm({ inicial, onSalvar, onCancelar }: Props) {
           />
         </View>
       </View>
+
+      {/* Base de cálculo */}
+      <Text style={styles.label}>Base de cálculo do salário</Text>
+      <View style={styles.tipoRow}>
+        <TouchableOpacity
+          style={[styles.tipoBtn, baseMes === 'diasUteis' && styles.tipoBtnAtivo]}
+          onPress={() => setBaseMes('diasUteis')}
+        >
+          <Text style={[styles.tipoBtnText, baseMes === 'diasUteis' && styles.tipoBtnTextAtivo]}>
+            Dias Úteis
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tipoBtn, baseMes === 'mesCompleto' && styles.tipoBtnAtivo]}
+          onPress={() => setBaseMes('mesCompleto')}
+        >
+          <Text style={[styles.tipoBtnText, baseMes === 'mesCompleto' && styles.tipoBtnTextAtivo]}>
+            Mês Cheio (30 dias)
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.hint}>
+        {baseMes === 'diasUteis'
+          ? `Divide o salário por ${parseInt(diasUteis) || 22} dias úteis × ${parseInt(horasPorDia) || 8}h = ${(parseInt(diasUteis) || 22) * (parseInt(horasPorDia) || 8)}h/mês`
+          : `Divide o salário por 30 dias × ${parseInt(horasPorDia) || 8}h = ${30 * (parseInt(horasPorDia) || 8)}h/mês`}
+      </Text>
 
       {/* Horários */}
       <View style={styles.row}>
